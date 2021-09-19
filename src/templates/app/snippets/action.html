@@ -1,0 +1,15 @@
+{% if password_link %}
+    <a href="{{ password_link }}" class="btn btn-primary btn-xs">
+        <i class="anticon anticon-lock"></i>
+    </a>
+{% endif %}
+{% if update_link %}
+<a href="{{ update_link }}" class="btn btn-primary btn-xs">
+    <i class="anticon anticon-edit"></i>
+</a>
+{% endif %}
+{% if delete_link %}
+<a href="{{ delete_link }}" class="btn btn-danger btn-xs">
+    <i class="anticon anticon-delete"></i>
+</a>
+{% endif %}
