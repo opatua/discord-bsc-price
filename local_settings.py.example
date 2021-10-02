@@ -13,6 +13,16 @@ DATABASES = {
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
 # CELERY & REDIS
 # ------------------------------------------------------------------------------
 BROKER_URL = 'redis://localhost:6379'
@@ -25,5 +35,6 @@ BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 
 # DISCORD BOT
 DISCORD_BOT_FETCH_INTERVAL = 120
-PANCAKESWAP_URL = ''
-BSC_API_KEY = ''
+
+# CoinGecko
+COIN_GECKO_URL = 'https://api.coingecko.com/api/v3'
