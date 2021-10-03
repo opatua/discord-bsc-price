@@ -177,3 +177,52 @@ class CoinGeckoService:
                 if network.get('id')
             ],
         )
+
+    def _get_simple_price(
+        self,
+        price_id: str,
+        vs_currency: str,
+    ) -> Dict[str, Any]:
+        coin_gecko_response = cache.get(
+            f'{self.coin_gecko_cache_key}_simple_{price_id}_{vs_currency}',
+        )
+        if coin_gecko_response:
+            return coin_gecko_response
+
+        coin_gecko_response = []
+        try:
+            coin_gecko_response = self.third_party_service.call(
+                'GET',
+                f'{settings.COIN_GECKO_URL}/simple/price?ids={price_id}&vs_currencies={vs_currency}',
+                None,
+            ).json()
+        except:
+            time.sleep(settings.DISCORD_BOT_FETCH_INTERVAL)
+            print(
+                f"Retry calling coingecko api asset platforms at {self.date_service.parse('now')}",
+            )
+
+            return self.get_available_networks()
+
+        cache.set(
+            f'{self.coin_gecko_cache_key}_simple_{price_id}_{vs_currency}',
+            coin_gecko_response,
+            settings.DISCORD_BOT_FETCH_INTERVAL,
+        )
+
+        return coin_gecko_response
+
+    def get_simple_price(
+        self,
+        price_id: str,
+        vs_currency: str,
+    ) -> Optional[str]:
+        coin_gecko_response = self._get_simple_price(
+            price_id,
+            vs_currency,
+        )
+
+        if not coin_gecko_response:
+            return None
+
+        return f'{round(coin_gecko_response.get(price_id, {}).get(vs_currency), 2):,}'
