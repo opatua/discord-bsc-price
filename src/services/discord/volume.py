@@ -6,7 +6,7 @@ from django.conf import settings
 from src.services.coin_gecko_service import CoinGeckoService
 
 
-class Price(discord.Client):
+class Volume(discord.Client):
     coin_gecko_service = CoinGeckoService()
     channel_id = None
     bot_id = None
@@ -17,7 +17,7 @@ class Price(discord.Client):
 
     async def status_update(self):
         while True:
-            price, price_from = self.coin_gecko_service.get_price_details(
+            volume, price_from = self.coin_gecko_service.get_volume(
                 self.coin_gecko_service.get_details_by_contract(
                     self.contract_address,
                     self.network,
@@ -26,7 +26,7 @@ class Price(discord.Client):
                 self.target_market,
             )
 
-            if not price:
+            if not volume:
                 print('price not found')
 
                 break
@@ -34,7 +34,7 @@ class Price(discord.Client):
             await self.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'{price_from} {self.target_currency.upper()} {price}',
+                    name=f'{price_from} {self.target_currency.upper()} {volume}',
                 ),
             )
 

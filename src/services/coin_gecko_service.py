@@ -92,7 +92,7 @@ class CoinGeckoService:
 
             return None, None
 
-        return f'{round(Decimal(price), 12):12f}', ticker.get('market').get('name')
+        return f'{round(Decimal(price), 12):12f}'.rstrip('0'), ticker.get('market').get('name')
 
     def get_market_cap(
         self,
@@ -137,7 +137,7 @@ class CoinGeckoService:
         if not volume:
             return None, None
 
-        return f'{target_currency.upper()} {round(Decimal(volume), 2)}', ticker.get('market', {}).get('name')
+        return f'{round(Decimal(volume), 2):,}', ticker.get('market', {}).get('name')
 
     def _get_available_networks(self) -> List[Dict[str, Any]]:
         coin_gecko_response = cache.get(

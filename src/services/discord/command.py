@@ -1,5 +1,3 @@
-from decimal import Decimal
-from typing import Any, Dict, Optional, Tuple
 from discord.ext import commands
 
 from src.services.coin_gecko_service import CoinGeckoService
@@ -30,7 +28,7 @@ class Command(commands.Bot):
                 return None
 
             await ctx.send(
-                f"```{contract_details.get('symbol')} price {price} in {target_currency.upper()} from {price_from}```",
+                f"```{contract_details.get('symbol')} price {target_currency.upper()} {price} from {price_from}```",
             )
 
         @self.command(name='mcap', help='Please provide contract address, network. To check network with `!networks`')
@@ -53,7 +51,7 @@ class Command(commands.Bot):
                 return None
 
             await ctx.send(
-                f"```Market cap {contract_details.get('symbol')} {market_cap} in {target_currency.upper()} from {price_from}```",
+                f"```Market cap {contract_details.get('symbol')} {target_currency.upper()} {market_cap} from {price_from}```",
             )
 
         @self.command(name='volume', help='Please provide contract address, network. To check network with `!networks`')
@@ -76,7 +74,7 @@ class Command(commands.Bot):
                 return None
 
             await ctx.send(
-                f"```Volume {contract_details.get('symbol')} {volume} in {target_currency.upper()} from {price_from}```",
+                f"```Volume {contract_details.get('symbol')} {target_currency.upper()} {volume} from {price_from}```",
             )
 
         @self.command(name='networks', help='Get all available networks')
