@@ -23,18 +23,8 @@ CACHES = {
     }
 }
 
-# CELERY & REDIS
-# ------------------------------------------------------------------------------
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Jakarta'
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-
 # DISCORD BOT
 DISCORD_BOT_FETCH_INTERVAL = 120
 
 # CoinGecko
-COIN_GECKO_URL = 'https://api.coingecko.com/api/v3'
+COIN_GECKO_URL = ''

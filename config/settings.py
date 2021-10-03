@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     # Internal Apps
     'src.apps.SrcConfig',
     'api.apps.ApiConfig',
-    'app.apps.AppConfig',
 
 ]
 
