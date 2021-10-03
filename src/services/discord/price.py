@@ -16,6 +16,28 @@ class Price(discord.Client):
     target_currency = ''
 
     async def status_update(self):
+        price_bot = self.get_guild(
+            self.channel_id,
+        ).get_member(self.bot_id)
+        if not price_bot:
+            print('Bot not found!')
+
+            return None
+
+        contract_details = self.coin_gecko_service.get_details_by_contract(
+            self.contract_address,
+            self.network,
+        )
+
+        ticker = self.coin_gecko_service.get_ticker(
+            contract_details,
+            self.target_market
+        )
+        if not ticker:
+            return None
+
+        await price_bot.edit(nick=f"Price {contract_details.get('symbol').upper()} {ticker.get('market', {}).get('name')}")
+
         while True:
             price, price_from = self.coin_gecko_service.get_price_details(
                 self.coin_gecko_service.get_details_by_contract(
@@ -34,7 +56,7 @@ class Price(discord.Client):
             await self.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'{price_from} {self.target_currency.upper()} {price}',
+                    name=f'{self.target_currency.upper()} {price}',
                 ),
             )
 
