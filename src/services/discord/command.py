@@ -11,88 +11,70 @@ class Command(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!")
 
-        @self.command(name='price', help='please provide BSC token address')
-        async def get_price(ctx, network: str, contract_address: str, target_currency: str = 'usd', from_market: str = None):
+        @self.command(name='price', help='please provide contract address, network')
+        async def get_price(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
             contract_details = self.coin_gecko_service.get_details_by_contract(
                 contract_address,
                 network,
             )
-            price, price_from = self.get_price_details(
+            price, price_from = self.coin_gecko_service.get_price_details(
                 contract_details,
                 target_currency,
-                from_market,
+                target_market,
             )
             if not price:
                 await ctx.send(
-                    f"```Unable to get price from {from_market}.```",
+                    f"```Unable to get price from {target_market}.```",
                 )
 
                 return None
 
             await ctx.send(
-                f"```Price {contract_details.get('symbol')} {round(Decimal(price), 12):12f} in {target_currency.upper()} from {price_from}```",
+                f"```{contract_details.get('symbol')} price {price} in {target_currency.upper()} from {price_from}```",
             )
 
-        @self.command(name='mcap', help='please provide BSC token address')
-        async def get_market_cap(ctx, network: str, contract_address: str, target_currency: str = 'usd', from_market: str = None):
+        @self.command(name='mcap', help='please provide contract address, network')
+        async def get_market_cap(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
             contract_details = self.coin_gecko_service.get_details_by_contract(
                 contract_address,
                 network,
             )
 
-            total_supply = contract_details.get(
-                'market_data',
-                {},
-            ).get('total_supply')
-            if not total_supply:
+            market_cap, price_from = self.coin_gecko_service.get_market_cap(
+                contract_details,
+                target_currency,
+                target_market,
+            )
+            if not market_cap:
                 await ctx.send(
                     f"```Unable to calculate market cap.```",
                 )
 
                 return None
 
-            price, price_from = self.get_price_details(
-                contract_details,
-                target_currency,
-                from_market
+            await ctx.send(
+                f"```Market cap {contract_details.get('symbol')} {market_cap} in {target_currency.upper()} from {price_from}```",
             )
 
-            if not price:
+        @self.command(name='volume', help='please provide contract address, network')
+        async def get_volume(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
+            contract_details = self.coin_gecko_service.get_details_by_contract(
+                contract_address,
+                network,
+            )
+
+            volume, price_from = self.coin_gecko_service.get_volume(
+                contract_details,
+                target_currency,
+                target_market,
+            )
+            if not volume:
                 await ctx.send(
-                    f"```Unable to calculate market cap from {from_market}.```",
+                    f"```Unable to calculate market cap.```",
                 )
 
                 return None
 
             await ctx.send(
-                f"```Market cap {contract_details.get('symbol')} {round(Decimal(price) * Decimal(total_supply), 2):,} in {target_currency.upper()} from {price_from}```",
+                f"```Volume {contract_details.get('symbol')} {volume} in {target_currency.upper()} from {price_from}```",
             )
-
-    def get_price_details(
-        self,
-        contract_details: Dict[str, Any],
-        target_currency: str,
-        from_market: Optional[str],
-    ) -> Tuple[Optional[Decimal], Optional[str]]:
-        tickers = contract_details.get('tickers')
-        if not tickers:
-            return None, None
-
-        ticker = tickers[0]
-        if from_market:
-            data = [
-                datum
-                for datum in tickers
-                if from_market.lower() in datum.get('market', {}).get('identifier')
-            ]
-            if not data:
-                return None, None
-
-            ticker = data[0]
-
-        price = ticker.get('converted_last', {}).get(target_currency)
-        if not price:
-
-            return None, None
-
-        return price, ticker.get('market').get('name')

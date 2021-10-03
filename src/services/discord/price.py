@@ -21,13 +21,6 @@ class Price(discord.Client):
             self.contract_address,
             self.network,
         )
-        ticker = self.coin_gecko_service.get_ticker(
-            self.contract_address,
-            self.network,
-            self.target_market,
-        )
-        if not ticker:
-            return None
 
         await self.change_presence(
             activity=discord.Activity(
@@ -43,13 +36,15 @@ class Price(discord.Client):
 
                 break
 
-            ticker = self.coin_gecko_service.get_ticker(
-                self.contract_address,
-                self.network,
+            price, price_from = self.coin_gecko_service.get_price_details(
+                self.coin_gecko_service.get_details_by_contract(
+                    self.contract_address,
+                    self.network,
+                ),
+                self.target_currency,
                 self.target_market,
             )
 
-            price = ticker.get('converted_last', {}).get(self.target_currency)
             if not price:
                 print('price not found')
 

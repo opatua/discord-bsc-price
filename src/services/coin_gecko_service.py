@@ -1,5 +1,6 @@
 import time
-from typing import Any, Dict
+from decimal import Decimal
+from typing import Any, Dict, Optional, Tuple
 
 from django.conf import settings
 from django.core.cache import cache
@@ -52,24 +53,88 @@ class CoinGeckoService:
 
     def get_ticker(
         self,
-        contract_address: str,
-        network: str,
+        contract_details: Dict[str, Any],
         target_market: str
-    ) -> Dict[str, Any]:
-        coin_gecko_response = self.get_details_by_contract(
-            contract_address,
-            network,
+    ) -> Optional[Dict[str, Any]]:
+        tickers = contract_details.get('tickers')
+        if not tickers:
+            return None
+
+        ticker = tickers[0]
+        if target_market:
+            data = [
+                datum
+                for datum in tickers
+                if target_market.lower() in datum.get('market', {}).get('identifier')
+            ]
+            if not data:
+                return None
+
+            ticker = data[0]
+
+        return ticker
+
+    def get_price_details(
+        self,
+        contract_details: Dict[str, Any],
+        target_currency: str,
+        target_market: Optional[str],
+    ) -> Tuple[Optional[str], Optional[str]]:
+        ticker = self.get_ticker(
+            contract_details,
+            target_market,
         )
-        if not coin_gecko_response:
-            return None
+        if not ticker:
+            return None, None
 
-        data = [
-            ticker
-            for ticker in coin_gecko_response.get('tickers')
-            if ticker.get('market', {}).get('identifier') == target_market
-        ]
+        price = ticker.get('converted_last', {}).get(target_currency)
+        if not price:
 
-        if not data:
-            return None
+            return None, None
 
-        return data[0]
+        return f'{round(Decimal(price), 12):12f}', ticker.get('market').get('name')
+
+    def get_market_cap(
+        self,
+        contract_details: Dict[str, Any],
+        target_currency: str,
+        target_market: Optional[str],
+    ) -> Tuple[Optional[str], Optional[str]]:
+        total_supply = contract_details.get(
+            'market_data',
+            {},
+        ).get('total_supply')
+        if not total_supply:
+
+            return None, None
+
+        price, price_from = self.get_price_details(
+            contract_details,
+            target_currency,
+            target_market
+        )
+
+        if not price:
+
+            return None, None
+
+        return f'{round(Decimal(price) * Decimal(total_supply), 2):,}', price_from
+
+    def get_volume(
+        self,
+        contract_details: Dict[str, Any],
+        target_currency: str,
+        target_market: Optional[str],
+    ) -> Tuple[Optional[str], Optional[str]]:
+        ticker = self.get_ticker(
+            contract_details,
+            target_market,
+        )
+        if not ticker:
+            return None, None
+
+        volume = ticker.get('converted_volume', {}).get(target_currency)
+        if not volume:
+            return None, None
+
+        return f'{target_currency.upper()} {round(Decimal(volume), 2)}', ticker.get('market', {}).get('name')

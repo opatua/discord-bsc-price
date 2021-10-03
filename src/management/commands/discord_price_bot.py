@@ -28,11 +28,14 @@ class Command(BaseCommand):
             help='Network address',
         )
         parser.add_argument(
-            '--target_market',
+            'target_market',
+            nargs='?',
             help='Get price from market',
         )
         parser.add_argument(
-            '--target_currency',
+            'target_currency',
+            nargs='?',
+            default='usd',
             help='Currency you want to watch lower case example: usd, btc, eth',
         )
 
