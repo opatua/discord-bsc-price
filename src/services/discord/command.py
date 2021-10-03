@@ -11,7 +11,7 @@ class Command(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!")
 
-        @self.command(name='price', help='please provide contract address, network')
+        @self.command(name='price', help='Please provide contract address, network. To check network with `!networks`')
         async def get_price(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
             contract_details = self.coin_gecko_service.get_details_by_contract(
                 contract_address,
@@ -33,7 +33,7 @@ class Command(commands.Bot):
                 f"```{contract_details.get('symbol')} price {price} in {target_currency.upper()} from {price_from}```",
             )
 
-        @self.command(name='mcap', help='please provide contract address, network')
+        @self.command(name='mcap', help='Please provide contract address, network. To check network with `!networks`')
         async def get_market_cap(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
             contract_details = self.coin_gecko_service.get_details_by_contract(
                 contract_address,
@@ -56,7 +56,7 @@ class Command(commands.Bot):
                 f"```Market cap {contract_details.get('symbol')} {market_cap} in {target_currency.upper()} from {price_from}```",
             )
 
-        @self.command(name='volume', help='please provide contract address, network')
+        @self.command(name='volume', help='Please provide contract address, network. To check network with `!networks`')
         async def get_volume(ctx, network: str, contract_address: str, target_currency: str = 'usd', target_market: str = None):
             contract_details = self.coin_gecko_service.get_details_by_contract(
                 contract_address,
@@ -78,3 +78,19 @@ class Command(commands.Bot):
             await ctx.send(
                 f"```Volume {contract_details.get('symbol')} {volume} in {target_currency.upper()} from {price_from}```",
             )
+
+        @self.command(name='networks', help='Get all available networks')
+        async def get_networks(ctx):
+            await ctx.send(
+                f"Networks:\n```{self.coin_gecko_service.get_networks()}```",
+            )
+
+        @self.command(name='commands')
+        async def get_commands(ctx):
+            helps = [
+                'To check price use `!price` with optional value target currency such as `usd, btc, and eth` and target market like `pancakeswap, raydium, etc`, example\n```!price binance-smart-chain 0x4a8a99ac4e7973d20eb9e64db8eb94781dc80ba0```',
+                'To check market cap use `!mcap` with optional value target currency such as `usd, btc, and eth` and target market like `pancakeswap, raydium, etc`, example\n```!mcap binance-smart-chain 0x4a8a99ac4e7973d20eb9e64db8eb94781dc80ba0```',
+                'To check volume use `!volume` with optional value target currency such as `usd, btc, and eth` and target market like `pancakeswap, raydium, etc`, example\n```!volume binance-smart-chain 0x4a8a99ac4e7973d20eb9e64db8eb94781dc80ba0```',
+                'To get all available networks `!networks`',
+            ]
+            await ctx.send('\n\n'.join(helps))

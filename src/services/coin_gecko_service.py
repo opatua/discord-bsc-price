@@ -1,6 +1,6 @@
 import time
 from decimal import Decimal
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from django.conf import settings
 from django.core.cache import cache
@@ -35,7 +35,7 @@ class CoinGeckoService:
         except:
             time.sleep(settings.DISCORD_BOT_FETCH_INTERVAL)
             print(
-                f"Retry calling coingecko api at {self.date_service.parse('now')}",
+                f"Retry calling coingecko coin details api at {self.date_service.parse('now')}",
             )
 
             return self.get_details_by_contract(
@@ -138,3 +138,42 @@ class CoinGeckoService:
             return None, None
 
         return f'{target_currency.upper()} {round(Decimal(volume), 2)}', ticker.get('market', {}).get('name')
+
+    def _get_available_networks(self) -> List[Dict[str, Any]]:
+        coin_gecko_response = cache.get(
+            f'{self.coin_gecko_cache_key}_available_networks',
+        )
+        if coin_gecko_response:
+            return coin_gecko_response
+
+        coin_gecko_response = []
+        try:
+            coin_gecko_response = self.third_party_service.call(
+                'GET',
+                f'{settings.COIN_GECKO_URL}/asset_platforms',
+                None,
+            ).json()
+        except:
+            time.sleep(settings.DISCORD_BOT_FETCH_INTERVAL)
+            print(
+                f"Retry calling coingecko api asset platforms at {self.date_service.parse('now')}",
+            )
+
+            return self.get_available_networks()
+
+        cache.set(
+            f'{self.coin_gecko_cache_key}_available_networks',
+            coin_gecko_response,
+            settings.DISCORD_BOT_FETCH_INTERVAL,
+        )
+
+        return coin_gecko_response
+
+    def get_networks(self) -> str:
+        return '\n'.join(
+            [
+                network.get('id')
+                for network in self._get_available_networks()
+                if network.get('id')
+            ],
+        )
