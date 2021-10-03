@@ -22,7 +22,7 @@ class SimplePrice(discord.Client):
 
             return None
 
-        await price_bot.edit(nick=f"Price {self.price_id.upper()}")
+        await price_bot.edit(nick=f"Price {self.price_id.title().replace('-',' ')}"[:32])
 
         while True:
             price = self.coin_gecko_service.get_simple_price(

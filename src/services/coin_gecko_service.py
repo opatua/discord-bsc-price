@@ -225,4 +225,8 @@ class CoinGeckoService:
         if not coin_gecko_response:
             return None
 
-        return f'{round(coin_gecko_response.get(price_id, {}).get(vs_currency), 2):,}'
+        price = Decimal(coin_gecko_response.get(price_id, {}).get(vs_currency))
+
+        return f'{price:,}' if price > 1 else f'{round(price, 12):12f}'.rstrip(
+            '0',
+        )
