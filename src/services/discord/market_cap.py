@@ -36,7 +36,7 @@ class MarketCap(discord.Client):
         if not ticker:
             return None
 
-        await price_bot.edit(nick=f"Mcap {contract_details.get('symbol').upper()} {ticker.get('market', {}).get('name')}")
+        await price_bot.edit(nick=f"Mcap {contract_details.get('symbol').upper()}"[:32])
 
         while True:
             market_cap, price_from = self.coin_gecko_service.get_market_cap(
@@ -56,7 +56,7 @@ class MarketCap(discord.Client):
             await self.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'{self.target_currency.upper()} {market_cap}',
+                    name=f'From {price_from} {self.target_currency.upper()} {market_cap}',
                 ),
             )
 

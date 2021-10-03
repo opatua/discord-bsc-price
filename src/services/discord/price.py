@@ -36,7 +36,7 @@ class Price(discord.Client):
         if not ticker:
             return None
 
-        await price_bot.edit(nick=f"Price {contract_details.get('symbol').upper()} {ticker.get('market', {}).get('name')}")
+        await price_bot.edit(nick=f"Price {contract_details.get('symbol').upper()}"[:32])
 
         while True:
             price, price_from = self.coin_gecko_service.get_price_details(
@@ -56,7 +56,7 @@ class Price(discord.Client):
             await self.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'{self.target_currency.upper()} {price}',
+                    name=f'From {price_from} {self.target_currency.upper()} {price}',
                 ),
             )
 
