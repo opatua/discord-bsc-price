@@ -13,8 +13,8 @@ Available Django commands:
 - Market cap `python manage.py discord_market_cap_bot --channel_id=xxx --discord_bot_token=xxx --discord_bot_id=xxx --contract_address=0x4a8a99ac4e7973d20eb9e64db8eb94781dc80ba0 --network=binance-smart-chain`
 - Commands `python manage.py discord_command_bot --discord_bot_token=xxx`
 
-Except from `commands` there's optional arguments `--target_currency=xxx` and  `--target_market=xxx`
+Except for `commands` there's optional arguments `--target_currency=xxx` and  `--target_market=xxx`
 
-> Options from `target_currency`= usd, btc, eth
+> Options for `target_currency`= usd, btc, eth
 
 > Example for `target_market`= pancakeswap, raydium
