@@ -227,6 +227,6 @@ class CoinGeckoService:
 
         price = Decimal(coin_gecko_response.get(price_id, {}).get(vs_currency))
 
-        return f'{price:,}' if price > 1 else f'{round(price, 12):12f}'.rstrip(
+        return f'{round(price, 2):,}' if price > 1 else f'{round(price, 12):12f}'.rstrip(
             '0',
         )
