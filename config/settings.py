@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'simple_history',
 
     # Internal Apps
     'src.apps.SrcConfig',
@@ -180,7 +179,6 @@ CORS_PREFLIGHT_MAX_AGE = 86400
 # to be included in cross-site HTTP requests (CORS).
 CORS_ALLOW_CREDENTIALS = False
 
-AUTH_USER_MODEL = 'src.User'
 
 try:
     from local_settings import *
